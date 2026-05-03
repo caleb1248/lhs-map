@@ -45,11 +45,12 @@ export function App() {
 
     ctx.drawImage(
       satelliteImage,
-      -900,
-      -700,
-      satelliteImage.width * 2.47,
-      satelliteImage.height * 2.47,
+      -135,
+      -1195,
+      satelliteImage.width * 2.465,
+      satelliteImage.height * 2.465,
     );
+
     ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
 
     ctx.strokeStyle = 'rgba(34, 211, 238, 0.95)';
@@ -176,7 +177,7 @@ export function App() {
       </aside>
       <main className="grid min-w-0 flex-1 place-items-center overflow-auto bg-[#111] p-6">
         <div
-          className="relative w-full max-w-250"
+          className="relative w-full"
           style={{ aspectRatio: `${canvasWidth} / ${canvasHeight}` }}
         >
           <canvas

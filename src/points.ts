@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { loadPointsFromStorage, savePointsToStorage } from './pointsStorage';
 
 export type Point = {
   id: number;
@@ -24,6 +23,8 @@ const getNextPointId = (points: Point[]) => Math.max(1, ...points.map((point) =>
 
 type PointerEventTarget = HTMLCanvasElement;
 
+const currentPoints = (await (await fetch('/points.json')).json()) as Point[];
+
 export function usePoints() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pendingPointRef = useRef<{
@@ -33,7 +34,7 @@ export function usePoints() {
   } | null>(null);
   const draggingPointRef = useRef<number | null>(null);
   const dragOffsetRef = useRef<CanvasPoint | null>(null);
-  const [points, setPoints] = useState<Point[]>(() => loadPointsFromStorage());
+  const [points, setPoints] = useState<Point[]>(currentPoints);
   const nextPointIdRef = useRef(getNextPointId(points));
   const [selectedPointId, setSelectedPointId] = useState<number | null>(null);
   const [hoveredPointId, setHoveredPointId] = useState<number | null>(null);
@@ -185,7 +186,7 @@ export function usePoints() {
   };
 
   const handleAltDelete = (event: { altKey: boolean; key: string; preventDefault: () => void }) => {
-    if (!event.altKey || event.key !== 'Delete') {
+    if (!event.altKey || (event.key !== 'Delete' && event.key !== 'Backspace')) {
       return false;
     }
 
@@ -327,7 +328,13 @@ export function usePoints() {
       return;
     }
 
-    savePointsToStorage(points);
+    void fetch('/points', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(points),
+    });
   }, [points]);
 
   return {
